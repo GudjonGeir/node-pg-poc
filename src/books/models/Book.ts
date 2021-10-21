@@ -10,8 +10,15 @@ type BookInsert = {
   publishDate?: Date
 }
 
+type BookUpdate = {
+  id: number,
+  name: string,
+  publishDate?: Date
+}
+
 export {
   Book,
-  BookInsert
+  BookInsert,
+  BookUpdate,
 }
 

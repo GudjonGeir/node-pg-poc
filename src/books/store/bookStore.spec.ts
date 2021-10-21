@@ -1,6 +1,6 @@
 import BookStore from './bookStore';
 import { Pool } from 'pg'
-import { BookInsert } from '../models/Book';
+import { BookInsert, BookUpdate } from '../models/Book';
 
 describe('bookStore', () => {
   const pool = new Pool({
@@ -53,6 +53,41 @@ describe('bookStore', () => {
     it('should return null if book does not exist', async () => {
       const result = await store.getBook(-1);
       expect(result).toBeNull()
+    });
+
+  })
+
+  describe('updateBook', () => {
+    it('should update a book that exists', async () => {
+      const book: BookInsert = {
+        name: 'The Two Towers',
+        publishDate: new Date('1954-11-11T00:00:00.000Z')
+      }
+      const insertedBook = await store.addBook(book);
+
+      const bookUpdate: BookUpdate = {
+        id: insertedBook.id,
+        name: 'The Return of the King',
+        publishDate: new Date('1955-10-20T00:00:00.000Z')
+      }
+      await store.updateBook(bookUpdate)
+
+      const result = await store.getBook(insertedBook.id);
+      expect(result).not.toBeNull()
+      expect(result?.name).toEqual(bookUpdate.name);
+      expect(result?.publishDate?.toISOString())
+        .toEqual(bookUpdate.publishDate?.toISOString());
+    });
+
+    it('should not update a book that does not exists', async () => {
+      const bookUpdate: BookUpdate = {
+        id: -1,
+        name: 'The Return of the King',
+        publishDate: new Date('1955-10-20T00:00:00.000Z')
+      }
+      await expect(store.updateBook(bookUpdate))
+        .rejects
+        .toThrow('Book with id -1 not found')
     });
 
   })

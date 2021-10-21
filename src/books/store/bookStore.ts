@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { Book, BookInsert } from '../models/Book';
+import { Book, BookInsert, BookUpdate } from '../models/Book';
 
 class BookStore {
   private pool: Pool
@@ -35,6 +35,19 @@ class BookStore {
       };
     }
     return null;
+  };
+
+  async updateBook(book: BookUpdate): Promise<void> {
+    const result = await this.pool.query(`
+      UPDATE books
+      SET name = $1,
+          publish_date = $2
+      WHERE id = $3;
+    `, [book.name, book.publishDate, book.id])
+    if (result.rowCount === 0) {
+      // TODO: use custom error relevant to domain
+      throw new Error(`Book with id ${book.id} not found`);
+    }
   };
 }
 
