@@ -6,13 +6,13 @@ exports.up = pgm => {
   pgm.createTable('authors', {
     id: 'id',
     name: { type: 'string', notNull: true },
-    date_of_birth: { type: 'date' },
+    date_of_birth: { type: 'timestamp' },
   })
 
   pgm.createTable('books', {
     id: 'id',
     name: { type: 'string', notNull: true },
-    publish_date: { type: 'date' },
+    publish_date: { type: 'timestamp' },
   })
 
   pgm.createTable('book_authors', {
