@@ -1,6 +1,7 @@
 import BookStore from "./bookStore";
 import { Pool } from "pg";
 import { BookInsert, BookUpdate } from "../models/Book";
+import { AuthorInsert } from "../models/Author";
 
 describe("bookStore", () => {
   const pool = new Pool({
@@ -88,6 +89,42 @@ describe("bookStore", () => {
       await expect(store.updateBook(bookUpdate)).rejects.toThrow(
         "Book with id -1 not found"
       );
+    });
+  });
+
+  describe("addAuthor", () => {
+    it("should add a book", async () => {
+      const author: AuthorInsert = {
+        name: "J. R. R. Tolkien",
+        dateOfBirth: "1892-01-03",
+        bio: "John Ronald Reuel Tolkien CBE FRSL was an English writer, poet, philologist, and academic, best known as the author of the high fantasy works The Hobbit and The Lord of the Rings.",
+      };
+      const result = await store.addAuthor(author);
+      expect(result.name).toEqual(author.name);
+      expect(result.dateOfBirth).toEqual(author.dateOfBirth);
+      expect(result.bio).toEqual(author.bio);
+    });
+
+    it("should add a without dateOfBirth", async () => {
+      const author: AuthorInsert = {
+        name: "J. R. R. Tolkien",
+        bio: "John Ronald Reuel Tolkien CBE FRSL was an English writer, poet, philologist, and academic, best known as the author of the high fantasy works The Hobbit and The Lord of the Rings.",
+      };
+      const result = await store.addAuthor(author);
+      expect(result.name).toEqual(author.name);
+      expect(result.dateOfBirth).toBeNull();
+      expect(result.bio).toEqual(author.bio);
+    });
+
+    it("should add a book without bio", async () => {
+      const author: AuthorInsert = {
+        name: "J. R. R. Tolkien",
+        dateOfBirth: "1892-01-03",
+      };
+      const result = await store.addAuthor(author);
+      expect(result.name).toEqual(author.name);
+      expect(result.dateOfBirth).toEqual(author.dateOfBirth);
+      expect(result.bio).toBeNull();
     });
   });
 

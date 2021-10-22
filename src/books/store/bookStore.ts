@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { Author, AuthorInsert } from "../models/Author";
 import { Book, BookInsert, BookUpdate } from "../models/Book";
 
 class BookStore {
@@ -14,7 +15,7 @@ class BookStore {
       INSERT INTO books(name, publish_date)
       VALUES($1, $2)
       RETURNING id, name, publish_date
-    `,
+      `,
       [book.name, book.publishDate]
     );
     return {
@@ -30,7 +31,7 @@ class BookStore {
       SELECT id, name, publish_date
       FROM books
       WHERE id = $1
-    `,
+      `,
       [bookId]
     );
     if (rows.length > 0) {
@@ -50,13 +51,32 @@ class BookStore {
       SET name = $1,
           publish_date = $2
       WHERE id = $3;
-    `,
+      `,
       [book.name, book.publishDate, book.id]
     );
     if (result.rowCount === 0) {
       // TODO: use custom error relevant to domain
       throw new Error(`Book with id ${book.id} not found`);
     }
+  }
+
+  async addAuthor(author: AuthorInsert): Promise<Author> {
+    const result = await this.pool.query(
+      `
+      INSERT INTO authors(name, date_of_birth, bio)
+      VALUES($1, $2, $3)
+      RETURNING id, name, date_of_birth::text, bio
+      `,
+      [author.name, author.dateOfBirth, author.bio]
+    );
+    const { rows } = result;
+    console.log(result);
+    return {
+      id: rows[0].id,
+      name: rows[0].name,
+      dateOfBirth: rows[0].date_of_birth,
+      bio: rows[0].bio,
+    };
   }
 }
 
