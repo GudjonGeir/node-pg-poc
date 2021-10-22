@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { Author, AuthorInsert } from "../models/Author";
+import { Author, AuthorInsert, AuthorUpdate } from "../models/Author";
 import { Book, BookInsert, BookUpdate } from "../models/Book";
 
 class BookStore {
@@ -96,6 +96,23 @@ class BookStore {
       };
     }
     return null;
+  }
+
+  async updateAuthor(author: AuthorUpdate): Promise<void> {
+    const result = await this.pool.query(
+      `
+      UPDATE authors
+      SET name = $1,
+          date_of_birth = $2,
+          bio = $3
+      WHERE id = $4;
+      `,
+      [author.name, author.dateOfBirth, author.bio, author.id]
+    );
+    if (result.rowCount === 0) {
+      // TODO: use custom error relevant to domain
+      throw new Error(`Author with id ${author.id} not found`);
+    }
   }
 }
 

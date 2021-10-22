@@ -10,4 +10,11 @@ type AuthorInsert = {
   dateOfBirth?: string;
   bio?: string;
 };
-export { Author, AuthorInsert };
+
+type AuthorUpdate = {
+  id: number;
+  name: string;
+  dateOfBirth?: string;
+  bio?: string;
+};
+export { Author, AuthorInsert, AuthorUpdate };
