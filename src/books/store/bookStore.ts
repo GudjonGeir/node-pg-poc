@@ -70,13 +70,32 @@ class BookStore {
       [author.name, author.dateOfBirth, author.bio]
     );
     const { rows } = result;
-    console.log(result);
     return {
       id: rows[0].id,
       name: rows[0].name,
       dateOfBirth: rows[0].date_of_birth,
       bio: rows[0].bio,
     };
+  }
+
+  async getAuthor(authorId: number): Promise<Author | null> {
+    const { rows } = await this.pool.query(
+      `
+      SELECT id, name, date_of_birth::text, bio
+      FROM authors
+      WHERE id = $1
+      `,
+      [authorId]
+    );
+    if (rows.length > 0) {
+      return {
+        id: rows[0].id,
+        name: rows[0].name,
+        dateOfBirth: rows[0].date_of_birth,
+        bio: rows[0].bio,
+      };
+    }
+    return null;
   }
 }
 

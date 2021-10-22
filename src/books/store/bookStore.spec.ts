@@ -128,6 +128,28 @@ describe("bookStore", () => {
     });
   });
 
+  describe("getAuthor", () => {
+    it("should get an author that exists", async () => {
+      const author: AuthorInsert = {
+        name: "J. R. R. Tolkien",
+        dateOfBirth: "1892-01-03",
+        bio: "John Ronald Reuel Tolkien CBE FRSL was an English writer, poet, philologist, and academic, best known as the author of the high fantasy works The Hobbit and The Lord of the Rings.",
+      };
+      const insertedAuthor = await store.addAuthor(author);
+
+      const result = await store.getAuthor(insertedAuthor.id);
+      expect(result).not.toBeNull();
+      expect(result?.name).toEqual(author.name);
+      expect(result?.dateOfBirth).toEqual(author.dateOfBirth);
+      expect(result?.bio).toEqual(author.bio);
+    });
+
+    it("should return null if book does not exist", async () => {
+      const result = await store.getAuthor(-1);
+      expect(result).toBeNull();
+    });
+  });
+
   afterAll(() => {
     pool.end();
   });
